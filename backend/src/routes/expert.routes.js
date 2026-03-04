@@ -1,0 +1,13 @@
+
+
+const express = require("express");
+const router = express.Router();
+const {
+    getExperts,
+    getExpertById,
+} = require("../controllers/expert.controller");
+
+router.get("/", getExperts);
+router.get("/:id", getExpertById);
+
+module.exports = router;
