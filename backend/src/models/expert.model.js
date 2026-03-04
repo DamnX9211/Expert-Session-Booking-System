@@ -44,4 +44,4 @@ const expertSchema = new mongoose.Schema({
   { timestamps: true }
 );
 
-const Expert = mongoose.model('Expert', expertSchema);
+module.exports = mongoose.model('Expert', expertSchema);
