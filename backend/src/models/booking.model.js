@@ -36,13 +36,14 @@ const bookingSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["pending", "confirmed", "cancelled"],
+        enum: ["pending", "confirmed", "completed"],
         default: "pending",
     }
 },
  { timestamps: true }
 );
 
+// Unique index to prevent double booking
 bookingSchema.index(
     { expert: 1, date: 1, timeSlot: 1},
     { unique: true }
