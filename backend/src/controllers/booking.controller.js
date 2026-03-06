@@ -5,13 +5,15 @@ const mongoose = require("mongoose");
 
 // Bookings
 exports.createBooking = asyncHandler(async (req, res) => {
-  const { expertId, name, email, phone, date, timeSlot, notes } = req.body;
+  const { expertId, phone, date, timeSlot, notes } = req.body;
+
+  const userId = req.user._id;
 
   // Validate input
-  if (!expertId || !name || !email || !phone || !date || !timeSlot) {
+  if (!expertId || !phone || !date || !timeSlot) {
     return res.status(400).json({ message: "All fields are required" });
   }
-  //   // Validate expert
+  // //   // Validate expert
   if (!mongoose.Types.ObjectId.isValid(expertId)) {
     return res.status(400).json({ message: "Invalid expert ID" });
   }
@@ -33,25 +35,24 @@ exports.createBooking = asyncHandler(async (req, res) => {
   // Creating booking
   try {
     const booking = await Booking.create({
+      user: userId,
       expert: expertId,
-      name,
-      email,
       phone,
       date,
       timeSlot,
-      notes,
+      notes
     });
     // Emit real-time update
     const io = req.app.get("io");
     io.to(`expert_${expertId}`).emit("slotBooked", {
       expertId,
       date,
-      timeSlot,
+      timeSlot
     });
 
     res.status(201).json({
       message: "Booking created successfully",
-      booking,
+      booking
     });
   } catch (error) {
     // Duplicate slot booking
@@ -62,20 +63,20 @@ exports.createBooking = asyncHandler(async (req, res) => {
   }
 });
 
-// Get bookings for an expert by email
-exports.getBookingsByEmail = asyncHandler(async (req, res) => {
-  const { email } = req.query;
+// // Get bookings for an expert by email
+// exports.getBookingsByEmail = asyncHandler(async (req, res) => {
+//   const { email } = req.query;
 
-  if (!email) {
-    return res.status(400).json({ message: "Email is required" });
-  }
-  const bookings = await Booking.find({ email })
-    .populate("expert", "name category")
-    .sort({ createdAt: -1 });
-  res.json({ data: bookings });
-});
+//   if (!email) {
+//     return res.status(400).json({ message: "Email is required" });
+//   }
+//   const bookings = await Booking.find({ email })
+//     .populate("expert", "name category")
+//     .sort({ createdAt: -1 });
+//   res.json({ data: bookings });
+// });
 
-// Get bookings for an expert by ID
+// // Get bookings for an expert by ID
 exports.updateBookingStatus = asyncHandler(async (req, res) => {
   const { status } = req.body;
 
@@ -93,3 +94,14 @@ exports.updateBookingStatus = asyncHandler(async (req, res) => {
   await booking.save();
   res.json({ message: "Booking status updated", booking });
 });
+
+// Get bookings for logged in user
+exports.getMyBookings = asyncHandler(async (req, res) => {
+  const bookings = await Booking.find({
+    user: req.user._id
+  })
+  .populate("expert", "name category")
+  .sort({ createdAt: -1 });
+
+  res.json({ bookings });
+})

@@ -1,59 +1,58 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import API from "../services/api";
 
 export default function MyBookings() {
-  const [email, setEmail] = useState("");
   const [bookings, setBookings] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   const fetchBookings = async () => {
-    if (!email) {
-      return setError("Please enter your email to view bookings.");
-    }
     try {
       setLoading(true);
       setError("");
 
-      const res = await API.get("/bookings", {
-        params: {
-          email,
-        },
-      });
-      setBookings(res.data.data || res.data);
-    } catch {
+      const res = await API.get("/bookings/me");
+      const dataArray = res.data.bookings || res.data.data || [];
+      setBookings(Array.isArray(dataArray) ? dataArray : []);
+    } catch (err) {
+      console.log(err);
+      setBookings([]);
       setError("Failed to fetch bookings. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchBookings();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading Bookings...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-red-500">{error}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-5xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">My Bookings</h1>
 
-      <div>
-        <input
-          type="email"
-          placeholder="Enter your email"
-          className="border p-2 rounded w-full"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+      {bookings.length === 0 && (
+        <p className="text-gray-500">No bookings found.</p>
+      )}
 
-        <button
-          onClick={fetchBookings}
-          className="bg-blue-500 text-white py-2 rounded hover:bg-blue-600 text-sm mt-2"
-        >
-          Search
-        </button>
-      </div>
-
-      {loading && <p>Loading Bookings...</p>}
-      {error && <p className="text-red-500">{error}</p>}
-
-      <div>
-        {bookings?.map((booking) => (
+      <div className="space-y-4">
+        {bookings.map((booking)=> (
           <div key={booking._id} className="border p-4 rounded mb-4">
             <p className="text-gray-900">{booking.expert.name}</p>
             <p>
@@ -67,14 +66,11 @@ export default function MyBookings() {
             </p>
 
             <p>
-              Status: <span>{booking.status}</span>
+              <b>Status:</b> <span>{booking.status}</span>
             </p>
           </div>
         ))}
       </div>
-      {!loading && bookings.length === 0 && (
-        <p className="text-gray-500">No bookings found.</p>
-      )}
     </div>
   );
 }
