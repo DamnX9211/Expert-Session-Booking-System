@@ -14,12 +14,13 @@ export default function ExpertDetail() {
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
+      const today = new Date().toISOString().split("T")[0];
 
       const expertRes = await API.get(`/experts/${id}`);
-      const slotsRes = await API.get(`/experts/${id}/slots`);
+      const slotsRes = await API.get(`/experts/${id}/available-slots?date=${today}`);
 
       setExpert(expertRes.data);
-      setSlots(slotsRes.data.availableSlots);
+      setSlots([slotsRes.data]);
     } catch (error) {
       setError(
         error.response?.data?.message || "Failed to load expert details",

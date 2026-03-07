@@ -54,6 +54,9 @@ exports.getAvailableSlots = asyncHandler(async (req, res) => {
 
     const expertId = req.params.id;
     const {date} = req.query;
+    if (!date || isNaN(new Date(date).getTime())) {
+        return res.status(400).json({ message: "A valid date query parameter is required (YYYY-MM-DD)" });
+    }
     const dayOfWeek = new Date(date).getDay();
 
     const availability = await Availability.findOne({
@@ -62,7 +65,7 @@ exports.getAvailableSlots = asyncHandler(async (req, res) => {
     });
 
     if(!availability) {
-        return res.json({ slots: []});
+        return res.json({date, slots: []});
     }
 
     const generatedSlots = generateSlots(
@@ -73,55 +76,14 @@ exports.getAvailableSlots = asyncHandler(async (req, res) => {
 
     const bookings = await Booking.find({
         expert: expertId,
-        date
+        date: new Date(date),
     });
 
     const bookedSlots = bookings.map((booking) => booking.timeSlot);
 
-    const availableSlots = generateSlots.filter((slot) => !bookedSlots.includes(slot));
+    const availableSlots = generatedSlots.filter((slot) => !bookedSlots.includes(slot));
 
     res.json({ 
         date,
         slots: availableSlots });
 });
-
-
-
-
-
-
-//     const expert = await Expert.findById(expertId);
-
-//     if(!expert){
-//         return res.status(404).json({ message: "Expert not found"});
-//     }
-
-//     const bookings = await Booking.find({
-//         expert: expertId
-//     });
-
-//     const bookedMap = {};
-
-//     bookings.forEach((booking) => {
-//         const date = booking.date.toISOString().split("T")[0];
-
-//         if(!bookedMap[date]){
-//             bookedMap[date] = [];
-//         }
-//         bookedMap[date].push(booking.timeSlot);
-//     });
-
-//     const availableSlots = expert.availableSlots.map((day) =>{
-//         const dateStr = day.date.toISOString().split("T")[0];
-//         const bookedSlots = bookedMap[dateStr] || [];
-
-//         const freeSlots = day.slots.filter((slot) => !bookedSlots.includes(slot));
-//         return {
-//             date: dateStr,
-//             slots: freeSlots,
-//         };
-//     });
-//     res.json({
-//         expertId,
-//         availableSlots
-//     });

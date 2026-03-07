@@ -1,37 +1,28 @@
 import { useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import API from "../services/api";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import SlotSelector from "../components/SlotSelector";
 
 export default function Booking() {
   const { id } = useParams();
-  const [searchParams] = useSearchParams();
 
-  const date = searchParams.get("date");
-  const timeSlot = searchParams.get("slot");
+  const [date, setDate] = useState(null);
+  const [slot, setSlot] = useState(null);
 
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    notes: "",
-  });
+  const [phone, setPhone] = useState("");
+  const [notes, setNotes] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleBooking = async (e) => {
     e.preventDefault();
 
-    if (!form.name || !form.email || !form.phone) {
-      return setError("Please fill in all required fields.");
+    if (!date || !slot || !phone) {
+      return setError("Please select slot and enter phone number.");
     }
 
     try {
@@ -40,19 +31,13 @@ export default function Booking() {
 
       await API.post("/bookings", {
         expertId: id,
-        ...form,
-        date,
-        timeSlot,
+        phone,
+        date: date.toISOString().split("T")[0],
+        timeSlot: slot,
+        notes,
       });
 
       setMessage("Booking successful! We will contact you soon.");
-
-      setForm({
-        name: "",
-        email: "",
-        phone: "",
-        notes: "",
-      });
     } catch (error) {
       if (error.response?.status === 409) {
         setError("Failed to submit booking. Please try again.");
@@ -69,62 +54,59 @@ export default function Booking() {
 
   return (
     <div className="max-w-5xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Book Expert Session</h1>
+      <h1 className="text-2xl font-bold mb-6">Book Session</h1>
 
       <div className="mb-4 text-gray-700">
-        <p>
-          <b>Date:</b>
-          {date}
-        </p>
-        <p>
-          <b>Time Slot:</b>
-          {timeSlot}
-        </p>
-      </div>
-      {message && <p className="text-green-500">{message}</p>}
-      {error && <p className="text-red-500 mb-4">{error}</p>}
+        <label className="">Select Date</label>
 
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col gap-4 max-w-md space-y-4 mx-auto">
-        <input
-          type="text"
-          name="name"
-          placeholder="Your name"
-          value={form.name}
-          onChange={handleChange}
-          className="border p-2 rounded"
+        <DatePicker
+          selected={date}
+          onChange={(date) => setDate(date)}
+          className="border p-2 rounded w-full"
         />
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          className="border p-2 rounded"
-        />
-        <input
+      </div>
+
+      <SlotSelector 
+      expertId={id}
+      date={date?.toISOString().split("T")[0]}
+      onSelect={(slot) => setSlot(slot)}
+      />
+
+      {slot && (
+        <p className="mt-4 text-gray-700">
+          <b>Selected Slot:</b> {slot}
+        </p>
+      )}
+
+      <input
           type="tel"
           name="phone"
           placeholder="Phone"
-          value={form.phone}
-          onChange={handleChange}
-          className="border p-2 rounded"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          className="border p-2 rounded w-full mt-6"
         />
         <textarea
           name="notes"
           placeholder="Notes"
-          value={form.notes}
-          onChange={handleChange}
-          className="border p-2 rounded"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          className="border p-2 rounded w-full mt-4"
         />
         <button
-          type="submit"
+          onClick={handleBooking}
+          disabled={loading}
           className=" bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
         >
           {loading ? "booking..." : "Confirm Booking"}
         </button>
-      </form>
+
+        {message && (
+          <p className="text-green-500 mt-4">{message}</p>
+        )}
+        {error && (
+          <p className="text-red-500 mt-4">{error}</p>
+        )}
     </div>
   );
 }
