@@ -1,6 +1,8 @@
 const asyncHandler = require('../middlewares/asyncHandler');
 const Expert = require('../models/expert.model');
 const Booking = require("../models/booking.model");
+const generateSlots = require('../utils/generateSlots');
+const Availability = require('../models/availability.model');
 
 
 // @desc    Get all experts
@@ -49,40 +51,77 @@ exports.getExpertById = asyncHandler(async (req, res) => {
 
 // get available time slots
 exports.getAvailableSlots = asyncHandler(async (req, res) => {
-    const expertId = req.params.id;
-    const expert = await Expert.findById(expertId);
 
-    if(!expert){
-        return res.status(404).json({ message: "Expert not found"});
+    const expertId = req.params.id;
+    const {date} = req.query;
+    const dayOfWeek = new Date(date).getDay();
+
+    const availability = await Availability.findOne({
+        expert: expertId,
+        dayOfWeek
+    });
+
+    if(!availability) {
+        return res.json({ slots: []});
     }
 
+    const generatedSlots = generateSlots(
+        availability.startTime,
+        availability.endTime,
+        availability.slotDuration
+    );
+
     const bookings = await Booking.find({
-        expert: expertId
+        expert: expertId,
+        date
     });
 
-    const bookedMap = {};
+    const bookedSlots = bookings.map((booking) => booking.timeSlot);
 
-    bookings.forEach((booking) => {
-        const date = booking.date.toISOString().split("T")[0];
+    const availableSlots = generateSlots.filter((slot) => !bookedSlots.includes(slot));
 
-        if(!bookedMap[date]){
-            bookedMap[date] = [];
-        }
-        bookedMap[date].push(booking.timeSlot);
-    });
-
-    const availableSlots = expert.availableSlots.map((day) =>{
-        const dateStr = day.date.toISOString().split("T")[0];
-        const bookedSlots = bookedMap[dateStr] || [];
-
-        const freeSlots = day.slots.filter((slot) => !bookedSlots.includes(slot));
-        return {
-            date: dateStr,
-            slots: freeSlots,
-        };
-    });
-    res.json({
-        expertId,
-        availableSlots
-    });
+    res.json({ 
+        date,
+        slots: availableSlots });
 });
+
+
+
+
+
+
+//     const expert = await Expert.findById(expertId);
+
+//     if(!expert){
+//         return res.status(404).json({ message: "Expert not found"});
+//     }
+
+//     const bookings = await Booking.find({
+//         expert: expertId
+//     });
+
+//     const bookedMap = {};
+
+//     bookings.forEach((booking) => {
+//         const date = booking.date.toISOString().split("T")[0];
+
+//         if(!bookedMap[date]){
+//             bookedMap[date] = [];
+//         }
+//         bookedMap[date].push(booking.timeSlot);
+//     });
+
+//     const availableSlots = expert.availableSlots.map((day) =>{
+//         const dateStr = day.date.toISOString().split("T")[0];
+//         const bookedSlots = bookedMap[dateStr] || [];
+
+//         const freeSlots = day.slots.filter((slot) => !bookedSlots.includes(slot));
+//         return {
+//             date: dateStr,
+//             slots: freeSlots,
+//         };
+//     });
+//     res.json({
+//         expertId,
+//         availableSlots
+//     });

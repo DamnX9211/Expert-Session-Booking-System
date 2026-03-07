@@ -54,9 +54,9 @@ export default function MyBookings() {
       <div className="space-y-4">
         {bookings.map((booking)=> (
           <div key={booking._id} className="border p-4 rounded mb-4">
-            <p className="text-gray-900">{booking.expert.name}</p>
+            <p className="text-gray-900">{booking.expert?.name || "Unknown Expert"}</p>
             <p>
-              <b>Category:</b> {booking.expert.category}
+              <b>Category:</b> {booking.expert?.category || "N/A"}
             </p>
             <p>
               <b>Date:</b> {new Date(booking.date).toLocaleDateString()}

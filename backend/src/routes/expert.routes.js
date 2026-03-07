@@ -8,6 +8,6 @@ const {
 
 router.get("/", getExperts);
 router.get("/:id", getExpertById);
-router.get("/:id/slots", getAvailableSlots);
+router.get("/:id/available-slots", getAvailableSlots);
 
 module.exports = router;

@@ -79,7 +79,6 @@ export default function ExpertDetail() {
           </div>
         </div>
       ))}
-      ;
     </div>
   );
 }
