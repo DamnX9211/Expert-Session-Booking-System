@@ -2,12 +2,19 @@ const asyncHandler = require("../middlewares/asyncHandler");
 const Booking = require("../models/booking.model");
 const Expert = require("../models/expert.model");
 const mongoose = require("mongoose");
+const { acquireSlotLock, releaseSlotLock } = require("../utils/slotLock");
 
 // Bookings
 exports.createBooking = asyncHandler(async (req, res) => {
   const { expertId, phone, date, timeSlot, notes } = req.body;
 
   const userId = req.user._id;
+
+  const locked = await acquireSlotLock(expertId, date, timeSlot);
+
+  if(!locked) {
+    return res.status(400).json({ message: "Slot is being booked by another user" });
+  }
 
   // Validate input
   if (!expertId || !phone || !date || !timeSlot) {
@@ -57,24 +64,14 @@ exports.createBooking = asyncHandler(async (req, res) => {
   } catch (error) {
     // Duplicate slot booking
     if (error.code === 11000) {
-      return res.status(400).json({ message: "Time slot already booked" });
+      return res.status(400).json({ message: "slot already booked" });
     }
     throw error;
+  } finally {
+     await releaseSlotLock(expertId, date, timeSlot);
   }
 });
 
-// // Get bookings for an expert by email
-// exports.getBookingsByEmail = asyncHandler(async (req, res) => {
-//   const { email } = req.query;
-
-//   if (!email) {
-//     return res.status(400).json({ message: "Email is required" });
-//   }
-//   const bookings = await Booking.find({ email })
-//     .populate("expert", "name category")
-//     .sort({ createdAt: -1 });
-//   res.json({ data: bookings });
-// });
 
 // // Get bookings for an expert by ID
 exports.updateBookingStatus = asyncHandler(async (req, res) => {
