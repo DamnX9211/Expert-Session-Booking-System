@@ -97,6 +97,7 @@ export default function Availability() {
         <input
           type="time"
           name="startTime"
+          placeholder="time"
           value={form.startTime}
           onChange={handleChange}
           className="border p-2 rounded w-full"

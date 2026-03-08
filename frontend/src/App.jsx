@@ -10,10 +10,12 @@ import ExpertLayout from "./components/ExpertLayout";
 import Dashboard from "./pages/expert/Dashboard";
 import Availability from "./pages/expert/Availability";
 import Sessions from "./pages/expert/Sessions";
+import Navbar from "./components/Navbar";
 
 function App() {
   return (
     <BrowserRouter>
+      <Navbar />
       <Routes>
         <Route path="/" element={<ExpertList />} />
         <Route path="/experts/:id" element={<ExpertDetail />} />

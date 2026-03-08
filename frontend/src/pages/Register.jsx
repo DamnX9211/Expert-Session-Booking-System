@@ -2,11 +2,15 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import API from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import { useSearchParams } from "react-router-dom";
 
 export default function Register(){
 
   const navigate = useNavigate();
   const { login } = useAuth();
+  const [searchParams] = useSearchParams();
+  const role = searchParams.get("role") || "user";
+
 
   const [form, setForm] = useState({
     name:"",
@@ -39,7 +43,7 @@ export default function Register(){
       setLoading(true);
       setError("");
 
-      const res = await API.post("/auth/register",form);
+      const res = await API.post("/auth/register", { ...form, role });
 
       login(res.data);
 

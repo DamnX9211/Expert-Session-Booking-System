@@ -6,9 +6,17 @@ const bcrypt = require('bcrypt');
 
 
 exports.register = asyncHandler( async (req, res) => {
-    const { name, email, password }  = req.body;
+    const { name, email, password, role }  = req.body;
 
-    if(!name || !email || !password) {
+    const allowedRoles = ["user", "expert"];
+    if(role && !allowedRoles.includes(role)) {
+        return res.status(400).json({ message: "Invalid role" });
+    }
+
+    const userRole = allowedRoles.includes(role) ? role : "user";
+
+    // Validate input
+   if(!name || !email || !password) {
         return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -26,7 +34,8 @@ exports.register = asyncHandler( async (req, res) => {
     const user = await User.create({
         name,
         email,
-        password: hashedPassword
+        password: hashedPassword,
+        role: userRole
     });
 
     if (user) {
