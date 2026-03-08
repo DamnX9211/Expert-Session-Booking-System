@@ -1,4 +1,5 @@
-const asyncHandler = require("express-async-handler");
+const asyncHandler = require("../middlewares/asyncHandler");
+const Expert = require("../models/expert.model")
 const Availability = require("../models/availability.model");
 const Booking = require("../models/booking.model");
 

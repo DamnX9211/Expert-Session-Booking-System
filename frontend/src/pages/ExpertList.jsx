@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import API from "../services/api";
 import Expertcard from "../components/ExpertCard";
+import { Link } from "react-router-dom";
 
 export default function ExpertList() {
   const [experts, setExperts] = useState([]);
@@ -38,7 +39,11 @@ export default function ExpertList() {
 
   return (
     <div className="max-w-6xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Expert Sessions</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold mb-6">Expert Sessions</h1>
+        <Link to="/my-bookings" className="text-blue-500">My Bookings</Link>
+      </div>
+      
 
       {/* Search and filter */}
       <div className="flex gap-4 mb-6">
