@@ -16,6 +16,8 @@ import AdminRoute from "./components/AdminRoute";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import PendingApproval from "./pages/PendingApproval";
 import Experts from "./pages/admin/Experts";
+import Adminlayout from "./pages/admin/AdminLayout";
+
 
 function App() {
   return (
@@ -42,31 +44,28 @@ function App() {
               <ExpertLayout />
             </ExpertRoute>
           }
-        />
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="availability" element={<Availability />} />
-        <Route path="sessions" element={<Sessions />} />
+        >
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="availability" element={<Availability />} />
+          <Route path="sessions" element={<Sessions />} />
+        </Route>
 
         <Route
-          path="/admin/dashboard"
+          path="/admin"
           element={
             <AdminRoute>
-              <AdminDashboard />
+              <Adminlayout />
             </AdminRoute>
           }
+        >
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="experts" element={<Experts />} />
+        </Route>
+        <Route
+          path="/pending-approval"
+          element={<PendingApproval />}
         />
-        <Route 
-        path="/pending-approval" 
-        element={<PendingApproval />} 
-        />
-        <Route 
-        path="/admin/experts" 
-        element={
-          <AdminRoute>
-            <Experts />
-          </AdminRoute>
-        } 
-      />
+
       </Routes>
     </BrowserRouter>
   );

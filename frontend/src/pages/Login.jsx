@@ -34,7 +34,7 @@ const Login = () => {
         navigate("/expert/dashboard");
         return;
       } else if(user.role === "admin"){
-        navigate("/admin/dashboard");
+        navigate("/admin");
         return;
       } else {
         navigate("/my-bookings");
