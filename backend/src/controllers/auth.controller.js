@@ -35,7 +35,8 @@ exports.register = asyncHandler( async (req, res) => {
         name,
         email,
         password: hashedPassword,
-        role: userRole
+        role: userRole,
+        status: userRole === "expert" ? "pending" : "approved"
     });
 
     if (user) {

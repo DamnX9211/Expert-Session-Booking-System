@@ -11,5 +11,9 @@ export default function ExpertRoute({ children}) {
     if(user.role !== "expert" ){
         return <Navigate to ="/"  />
     }
+
+    if(user.status !== "approved"){
+        return <Navigate to ="/pending-approval"  />
+    }
     return children;
 }

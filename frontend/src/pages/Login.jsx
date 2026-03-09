@@ -31,7 +31,7 @@ const Login = () => {
 
       login(res.data);
       if(user.role === "expert"){
-        navigate("/expert");
+        navigate("/expert/dashboard");
         return;
       } else if(user.role === "admin"){
         navigate("/admin/dashboard");
