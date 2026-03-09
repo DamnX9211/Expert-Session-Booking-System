@@ -55,12 +55,18 @@ function App() {
             </AdminRoute>
           }
         />
-        <Route path="/pending-approval" element={<PendingApproval />} />
-        <Route path="/admin/experts" element={
+        <Route 
+        path="/pending-approval" 
+        element={<PendingApproval />} 
+        />
+        <Route 
+        path="/admin/experts" 
+        element={
           <AdminRoute>
             <Experts />
           </AdminRoute>
-        } />
+        } 
+      />
       </Routes>
     </BrowserRouter>
   );
