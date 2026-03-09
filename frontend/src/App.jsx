@@ -5,12 +5,13 @@ import BookingForm from "./pages/Booking";
 import MyBookings from "./pages/MyBookings";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import ProtectedRoute from "./components/ProtectedRoute";
 import ExpertLayout from "./components/ExpertLayout";
 import Dashboard from "./pages/expert/Dashboard";
 import Availability from "./pages/expert/Availability";
 import Sessions from "./pages/expert/Sessions";
 import Navbar from "./components/Navbar";
+import ExpertRoute from "./components/ExpertRoute";
+import UserRoute from "./components/UserRoute";
 
 function App() {
   return (
@@ -23,9 +24,9 @@ function App() {
         <Route
           path="/my-bookings"
           element={
-            <ProtectedRoute>
+            <UserRoute>
               <MyBookings />
-            </ProtectedRoute>
+            </UserRoute>
           }
         />
         <Route path="/login" element={<Login />} />
@@ -33,14 +34,15 @@ function App() {
         <Route
           path="/expert"
           element={
-            <ProtectedRoute>
+            <ExpertRoute>
               <ExpertLayout />
-            </ProtectedRoute>
+            </ExpertRoute>
           }
         >
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="availability" element={<Availability />} />
           <Route path="sessions" element={<Sessions />} />
+
         </Route>
       </Routes>
     </BrowserRouter>

@@ -6,7 +6,7 @@ const {
   createAvailability,
   getAvailability,
   deleteAvailability,
-  getexpertBookings,
+  getExpertBookings,
   updateBookingStatus,
 } = require("../controllers/expert.dashboard.controller");
 
@@ -15,7 +15,7 @@ router.use(protect, allowRoles("expert"));
 router.post("/availability", createAvailability);
 router.get("/availability", getAvailability);
 router.delete("/availability/:id", deleteAvailability);
-router.get("/bookings", getexpertBookings);
+router.get("/bookings", getExpertBookings);
 router.patch("/bookings/:id/status", updateBookingStatus);
 
 module.exports = router;

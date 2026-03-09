@@ -126,7 +126,7 @@ export default function Availability() {
       {/* Existing Availability */}
 
       <div>
-        {availability.map((item) => {
+        {Array.isArray(availability) && availability.map((item) => {
           return (
             <div key={item._id} className="border p-4 mb-4">
               <div>

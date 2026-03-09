@@ -23,7 +23,7 @@ exports.getAvailability = asyncHandler(async(req, res) => {
     const availability = await Availability.find({
         expert: req.user._id
     });
-    res.status(200).json({ availability });
+    res.status(200).json(availability);
 })
 
 
@@ -35,13 +35,13 @@ exports.deleteAvailability = asyncHandler(async(req, res) => {
 });
 
 // Get bookings for the logged-in expert
-exports.getexpertBookings = asyncHandler(async(req, res) =>{
+exports.getExpertBookings = asyncHandler(async(req, res) =>{
     const bookings = await Booking.find({
         expert: req.user._id
     }).populate("user", "name email")
     .sort({ date: 1 });
 
-    res.status(200).json({ bookings })
+    res.status(200).json(bookings)
 })
 
 // Update booking status (e.g., accept, reject) for the logged-in expert
@@ -59,6 +59,6 @@ exports.updateBookingStatus = asyncHandler(async(req, res) => {
 
     booking.status = status;
     await booking.save();
-    res.status(200).json({ message: "Booking status updated", booking });
+    res.status(200).json(booking)
 
 })

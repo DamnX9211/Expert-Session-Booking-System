@@ -27,8 +27,19 @@ const Login = () => {
         password
       });
 
+      const {user} = res.data;
+
       login(res.data);
-      navigate("/my-bookings");
+      if(user.role === "expert"){
+        navigate("/expert");
+        return;
+      } else if(user.role === "admin"){
+        navigate("/admin/dashboard");
+        return;
+      } else {
+        navigate("/my-bookings");
+        return;
+      }
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     } finally {
