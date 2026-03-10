@@ -17,6 +17,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import PendingApproval from "./pages/PendingApproval";
 import Experts from "./pages/admin/Experts";
 import Adminlayout from "./pages/admin/AdminLayout";
+import Bookings from "./pages/admin/Bookings";
 
 
 function App() {
@@ -58,6 +59,7 @@ function App() {
             </AdminRoute>
           }
         >
+          <Route path="bookings" element={<Bookings />} />
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="experts" element={<Experts />} />
         </Route>
