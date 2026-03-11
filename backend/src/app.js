@@ -4,6 +4,8 @@ const expertRoutes = require('./routes/expert.routes');
 const bookingRoutes = require('./routes/booking.routes');
 const authRoutes = require('./routes/auth.routes');
 const expertDashboardRoutes = require('./routes/expert.dashboard.routes');
+const adminRoutes = require('./routes/admin.routes');
+
 
 const app = express();
 
@@ -18,6 +20,7 @@ app.get("/", (req, res) => {
 app.use("/api/experts", expertRoutes);
 app.use("/api/bookings", bookingRoutes)
 app.use("/api/experts/me", expertDashboardRoutes);
+app.use("/api/admin", adminRoutes);
 
 
 module.exports = app;

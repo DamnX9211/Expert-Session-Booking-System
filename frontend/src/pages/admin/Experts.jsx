@@ -3,13 +3,13 @@ import API from "../../services/api";
 
 export default function Experts() {
     const [experts, setExperts] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const fetchExperts = async () => {
         try {
             const res = await API.get("/admin/experts")
 
-            setExperts(res.data.experts || []);
+            setExperts(res.data || []);
         } catch (error) {
             console.log(error);
             setExperts([]);

@@ -85,13 +85,14 @@ export default function Availability() {
           value={form.dayOfWeek}
           onChange={handleChange}
           className="border p-2 rounded w-full "
+          required
         >
           <option value="">Select Day</option>
-          {days.map((day, index) => {
+          {days.map((day, index) => (
             <option value={index} key={index}>
               {day}
-            </option>;
-          })}
+            </option>
+          ))}
         </select>
 
         <input
